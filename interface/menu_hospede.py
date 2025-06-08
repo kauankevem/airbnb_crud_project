@@ -1,0 +1,1 @@
+# Ações típicas de um hóspede

@@ -1,0 +1,1 @@
+# CRUD para acomodacao (subclasse de servico)

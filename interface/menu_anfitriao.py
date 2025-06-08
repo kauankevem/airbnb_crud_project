@@ -1,0 +1,1 @@
+# Ações típicas de um anfitrião
