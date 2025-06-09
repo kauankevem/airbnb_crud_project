@@ -1,21 +1,19 @@
 import psycopg2
 
-def connect_db():
-    """
-    Estabelece conexão com o banco de dados PostgreSQL.
+# Estabelecendo a conexão com o PostgreSQL com o usuario gabriel_carneiro
+try:
+    conn = psycopg2.connect(
+        user="gabriel_carneiro",
+        password="misterioairbnb",
+        host="10.61.49.174",
+        port="5432",
+        dbname="walleria"
+    )
+    cursor = conn.cursor()
+    print("Conexão realizada com sucesso!")
 
-    Retorna:
-        conn: Objeto de conexão com o banco.
-    """
-    try:
-        conn = psycopg2.connect(
-            user="postgres",            # Altere conforme seu usuário
-            password="sua_senha",       # Altere para sua senha
-            host="127.0.0.1",           # Ou IP do servidor remoto se for via SSH
-            port="22",                # Porta padrão do PostgreSQL
-            dbname="nome_do_banco"      # Altere para o nome do seu banco
-        )
-        return conn
-    except Exception as e:
-        print("Erro ao conectar no banco:", e)
-        exit()
+    cursor.execute("SET search_path TO airbnb;")
+
+except Exception as e:
+    print("Erro durante a conexão:", e)
+    exit()
