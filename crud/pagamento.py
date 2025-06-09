@@ -1,28 +1,48 @@
 # CRUD para pagamento
 
-def create_pagamento(conn, valor_pagamento, status_pagamento, data_pagamento, metodo_pagamento, id_reserva, id_usuario):
+def create_pagamento(
+    conn,
+    valor_pagamento,
+    status_pagamento,
+    data_pagamento,
+    metodo_pagamento,
+    id_reserva,
+    id_usuario,
+):
     """
-    Insere um novo pagamento.
-    Retorna o id_pagamento criado.
+    Insere um novo pagamento e imprime o resultado.
     """
     cursor = conn.cursor()
     sql = """
         INSERT INTO pagamento
-            (valor_pagamento, status_pagamento, data_pagamento, metodo_pagamento, id_reserva, id_usuario)
+            (valor_pagamento, status_pagamento, data_pagamento,
+             metodo_pagamento, id_reserva, id_usuario)
         VALUES (%s, %s, %s, %s, %s, %s)
         RETURNING id_pagamento;
     """
     try:
-        cursor.execute(sql, (valor_pagamento, status_pagamento, data_pagamento, metodo_pagamento, id_reserva, id_usuario))
+        cursor.execute(
+            sql,
+            (
+                valor_pagamento,
+                status_pagamento,
+                data_pagamento,
+                metodo_pagamento,
+                id_reserva,
+                id_usuario,
+            ),
+        )
         new_id = cursor.fetchone()[0]
-        return new_id
+        conn.commit()
+        print(f"Pagamento criado com id_pagamento={new_id}")
     except Exception as e:
         print("Erro ao criar pagamento:", e)
-        return None
+        conn.rollback()
+
 
 def read_pagamento(conn, id_pagamento):
     """
-    Recupera um pagamento pelo seu ID.
+    Exibe os detalhes de um pagamento pelo ID.
     """
     cursor = conn.cursor()
     sql = """
@@ -33,21 +53,23 @@ def read_pagamento(conn, id_pagamento):
     """
     try:
         cursor.execute(sql, (id_pagamento,))
-        return cursor.fetchone()
+        registro = cursor.fetchone()
+        print("Pagamento:", registro)
     except Exception as e:
         print("Erro ao ler pagamento:", e)
-        return None
+
 
 def update_pagamento(conn, id_pagamento, **kwargs):
     """
-    Atualiza campos de um pagamento.  
-    Campos possíveis: valor_pagamento, status_pagamento, data_pagamento, metodo_pagamento, id_reserva, id_usuario.
+    Atualiza campos de um pagamento.
+    Campos possíveis: valor_pagamento, status_pagamento, data_pagamento,
+    metodo_pagamento, id_reserva, id_usuario.
     """
     if not kwargs:
-        return False
+        print("Nenhum campo para atualizar.")
+        return
     cursor = conn.cursor()
-    cols = []
-    vals = []
+    cols, vals = [], []
     for k, v in kwargs.items():
         cols.append(f"{k} = %s")
         vals.append(v)
@@ -55,10 +77,12 @@ def update_pagamento(conn, id_pagamento, **kwargs):
     sql = f"UPDATE pagamento SET {', '.join(cols)} WHERE id_pagamento = %s;"
     try:
         cursor.execute(sql, vals)
-        return True
+        conn.commit()
+        print(f"Pagamento {id_pagamento} atualizado com sucesso.")
     except Exception as e:
         print("Erro ao atualizar pagamento:", e)
-        return False
+        conn.rollback()
+
 
 def delete_pagamento(conn, id_pagamento):
     """
@@ -68,15 +92,17 @@ def delete_pagamento(conn, id_pagamento):
     sql = "DELETE FROM pagamento WHERE id_pagamento = %s;"
     try:
         cursor.execute(sql, (id_pagamento,))
-        return True
+        conn.commit()
+        print(f"Pagamento {id_pagamento} removido com sucesso.")
     except Exception as e:
         print("Erro ao deletar pagamento:", e)
-        return False
+        conn.rollback()
 
-# Função para listar todos os pagamentos, útil para validações gerais e diagnóstico de performance
+
+# Função para listar todos os pagamentos de forma rápida
 def list_payments(conn):
     """
-    Retorna todos os pagamentos cadastrados.
+    Exibe todos os pagamentos cadastrados.
     """
     cursor = conn.cursor()
     sql = """
@@ -86,7 +112,8 @@ def list_payments(conn):
     """
     try:
         cursor.execute(sql)
-        return cursor.fetchall()
+        registros = cursor.fetchall()
+        for r in registros:
+            print(r)
     except Exception as e:
         print("Erro ao listar pagamentos:", e)
-        return []
