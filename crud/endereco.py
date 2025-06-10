@@ -1,8 +1,8 @@
-def create_endereco(conn, id_endereco, cidade, pais, estado, endereco_postal, cep):
+def create_endereco(conn, cidade, pais, estado, endereco_postal, cep):
     cursor = conn.cursor()
     try:
-        sql = "INSERT INTO endereco (id_endereco, cidade, pais, estado, endereco_postal, cep) VALUES (%s, %s, %s, %s, %s, %s)"
-        cursor.execute(sql, (id_endereco, cidade, pais, estado, endereco_postal, cep))
+        sql = "INSERT INTO endereco (cidade, pais, estado, endereco_postal, cep) VALUES (%s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql, (cidade, pais, estado, endereco_postal, cep))
         conn.commit()
         print("Registro inserido com sucesso!")
     except Exception as e:
