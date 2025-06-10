@@ -64,17 +64,3 @@ def delete_anfitriao(conn, id_usuario):
         print("Erro ao remover anfitrião:", e)
         conn.rollback()
         return False
-
-# Função para listar todos os anfitriões de forma eficiente
-def list_anfitriao(conn):
-    """
-    Retorna todos os registros de anfitrião (id_usuario, super_host).
-    """
-    cursor = conn.cursor()
-    try:
-        sql = "SELECT id_usuario, super_host FROM anfitriao;"
-        cursor.execute(sql)
-        return cursor.fetchall()
-    except Exception as e:
-        print("Erro ao listar anfitriões:", e)
-        return []

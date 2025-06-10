@@ -62,16 +62,3 @@ def delete_atividade_experiencia(conn, id_servico, atividade_exp):
         print("Erro ao remover atividade_experiencia:", e)
         conn.rollback()
 
-# Função para listar todas as atividades de forma eficiente
-def list_all_atividades(conn):
-    """
-    Lista todas as entradas da tabela atividade_experiencia.
-    """
-    cursor = conn.cursor()
-    try:
-        sql = "SELECT id_servico, atividade_exp FROM atividade_experiencia;"
-        cursor.execute(sql)
-        return cursor.fetchall()
-    except Exception as e:
-        print("Erro ao listar atividade_experiencia:", e)
-        return []

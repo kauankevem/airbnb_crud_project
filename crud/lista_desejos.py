@@ -81,19 +81,3 @@ def delete_lista_desejos(conn, id_lista):
     except Exception as e:
         print("Erro ao remover lista_de_desejos:", e)
         conn.rollback()
-
-
-# Função para listar todas as listas de desejos de forma eficiente
-def list_lista_desejos(conn):
-    """
-    Exibe todas as listas de desejos existentes.
-    """
-    cursor = conn.cursor()
-    try:
-        cursor.execute(
-            "SELECT id_lista_desejos, id_usuario, nome_lista FROM lista_desejos;"
-        )
-        for registro in cursor.fetchall():
-            print(registro)
-    except Exception as e:
-        print("Erro ao listar lista_de_desejos:", e)

@@ -84,17 +84,3 @@ def delete_anfitriao_oferta_servico(conn, id_usuario, id_servico):
     except Exception as e:
         print("Erro ao remover anfitriao_oferta_servico:", e)
         conn.rollback()
-
-# Função para listar todas as ofertas de serviço de forma eficiente
-def list_anfitriao_oferta_servico(conn):
-    """
-    Retorna todas as relações anfitrião-serviço.
-    """
-    cursor = conn.cursor()
-    try:
-        sql = "SELECT id_usuario, id_servico FROM anfitriao_oferta_servico;"
-        cursor.execute(sql)
-        return cursor.fetchall()
-    except Exception as e:
-        print("Erro ao listar anfitriao_oferta_servico:", e)
-        return []

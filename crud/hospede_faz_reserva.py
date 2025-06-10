@@ -92,20 +92,3 @@ def delete_hospede_faz_reserva(conn, id_usuario, id_reserva):
     except Exception as e:
         print("Erro ao remover relação hospede_faz_reserva:", e)
         conn.rollback()
-
-
-# Função para listar todas as relações de hóspede-reserva de forma rápida
-# Útil para validação, diagnóstico de sobrecarga e identificação de pontos críticos antes de operações mais pesadas.
-def list_hospede_faz_reserva(conn):
-    """
-    Lista todas as relações hóspede-reserva.
-    """
-    cursor = conn.cursor()
-    try:
-        cursor.execute(
-            "SELECT id_usuario, id_reserva FROM hospede_faz_reserva;"
-        )
-        return cursor.fetchall()
-    except Exception as e:
-        print("Erro ao listar relações hospede_faz_reserva:", e)
-        return []

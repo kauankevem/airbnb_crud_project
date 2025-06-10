@@ -72,20 +72,3 @@ def delete_avaliacao(conn, id_avaliacao):
         print("Erro ao remover avaliação:", e)
         conn.rollback()
         return False
-
-# Função para listar todas as avaliações de forma eficiente
-def list_avaliacoes(conn):
-    """
-    Retorna todos os registros da tabela avaliacao.
-    """
-    cursor = conn.cursor()
-    try:
-        sql = (
-            "SELECT id_avaliacao, id_reserva, id_usuario, comentario, data_avaliacao "
-            "FROM avaliacao;"
-        )
-        cursor.execute(sql)
-        return cursor.fetchall()
-    except Exception as e:
-        print("Erro ao listar avaliações:", e)
-        return []

@@ -70,20 +70,3 @@ def delete_acomodacao(conn, id_servico):
         print("Erro ao remover acomodação:", e)
         conn.rollback()
         return False
-
-# Função para listar todas as acomodações de forma eficiente
-def list_acomodacoes(conn):
-    """
-    Retorna todas as acomodações cadastradas.
-    """
-    cursor = conn.cursor()
-    try:
-        sql = (
-            "SELECT id_servico, tipo_acomodacao, quartos, banheiros, camas, capacidade "
-            "FROM acomodacao;"
-        )
-        cursor.execute(sql)
-        return cursor.fetchall()
-    except Exception as e:
-        print("Erro ao listar acomodações:", e)
-        return []

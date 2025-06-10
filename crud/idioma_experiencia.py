@@ -61,18 +61,3 @@ def delete_idioma_experiencia(conn, id_servico, idioma_exp):
     except Exception as e:
         print("Erro ao remover idioma_experiencia:", e)
         conn.rollback()
-
-# Função para listar todos os idiomas de forma eficiente
-# Útil para validação, diagnóstico de sobrecarga e identificação de pontos críticos.
-def list_all_idiomas(conn):
-    """
-    Lista todas as entradas de idioma_experiencia.
-    """
-    cursor = conn.cursor()
-    try:
-        sql = "SELECT id_servico, idioma_exp FROM idioma_experiencia;"
-        cursor.execute(sql)
-        return [(r[0], r[1]) for r in cursor.fetchall()]
-    except Exception as e:
-        print("Erro ao listar idioma_experiencia:", e)
-        return []

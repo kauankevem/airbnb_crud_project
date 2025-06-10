@@ -57,17 +57,3 @@ def delete_hospede(conn, id_usuario):
     except Exception as e:
         print("Erro ao remover hóspede:", e)
         conn.rollback()
-
-
-# Função para listar todos os hóspedes de forma eficiente
-def list_hospedes(conn):
-    """
-    Exibe todos os id_usuario de hóspedes.
-    """
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT id_usuario FROM hospede;")
-        for (uid,) in cursor.fetchall():
-            print(uid)
-    except Exception as e:
-        print("Erro ao listar hóspedes:", e)

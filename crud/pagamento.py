@@ -97,23 +97,3 @@ def delete_pagamento(conn, id_pagamento):
     except Exception as e:
         print("Erro ao deletar pagamento:", e)
         conn.rollback()
-
-
-# Função para listar todos os pagamentos de forma rápida
-def list_payments(conn):
-    """
-    Exibe todos os pagamentos cadastrados.
-    """
-    cursor = conn.cursor()
-    sql = """
-        SELECT id_pagamento, valor_pagamento, status_pagamento,
-               data_pagamento, metodo_pagamento, id_reserva, id_usuario
-        FROM pagamento;
-    """
-    try:
-        cursor.execute(sql)
-        registros = cursor.fetchall()
-        for r in registros:
-            print(r)
-    except Exception as e:
-        print("Erro ao listar pagamentos:", e)
