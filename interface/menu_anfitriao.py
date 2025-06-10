@@ -3,6 +3,8 @@ from crud.acomodacao import create_acomodacao
 from crud.reserva import list_reservas, confirm_reserva
 from crud.disponibilidade import create_disponibilidade, update_disponibilidade, read_disponibilidade, delete_disponibilidade
 from crud.avaliacao import create_avaliacao, read_avaliacao, update_avaliacao, delete_avaliacao
+from crud.endereco import create_endereco
+from crud.servico import create_servico
 
 def menu_confirmar_reservas(conn, id_anfitriao):
     with conn.cursor() as cur:
@@ -62,14 +64,49 @@ def menu_anfitriao():
 
         if opcao == '1':
             # coleta parâmetros e chama create_acomodacao
-            servico_id = int(input("ID do serviço existente: ").strip())
+            print("Insira o endereço do serviço: ")
+            pais = input("País: ")
+            uf = input("UF do estado: ")
+            cidade = input("Cidade: ")
+            endereco_postal = input("Endereco postal: ")
+            cep = input("CEP: ")
+            complemento = input("Complemento: ")
+            create_endereco(conn, cidade, pais, uf, endereco_postal, cep)
+            id_endereco = 0
+            try:
+                sql = (
+                    "SELECT COUNT(id_endereco) "
+                    "FROM endereco "
+                    "GROUP BY id_endereco;"
+                )
+                cursor.execute(sql)
+                id_endereco = cursor.fetchone()[0]
+                id_endereco += 1
+            except Exception as e:
+                print("Erro ao buscar enderecos:", e)
+                
+            nome_servico = input("Título do serviço: ")
+            create_servico(conn, nome_servico, anfitriao_id, id_endereco)
+            
+            try:
+                sql = (
+                    "SELECT COUNT(id_servico) "
+                    "FROM servico "
+                    "GROUP BY id_servico;"
+                )
+                cursor.execute(sql)
+                id_servico = cursor.fetchone()[0]
+                id_servico += 1
+            except Exception as e:
+                print("Erro ao buscar servicos:", e)
+            
             tipo = input("Tipo de acomodação: ").strip()
             quartos = int(input("Quartos: ").strip())
             banheiros = int(input("Banheiros: ").strip())
             camas = int(input("Camas: ").strip())
             cap = int(input("Capacidade: ").strip())
-            create_acomodacao(conn, servico_id, tipo, quartos, banheiros, camas, cap)
-
+            create_acomodacao(conn, id_servico, tipo, quartos, banheiros, camas, cap)
+            
         elif opcao == '2':
             menu_confirmar_reservas(conn, anfitriao_id)
 
