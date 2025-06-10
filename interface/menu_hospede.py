@@ -49,7 +49,7 @@ def buscar_acomodacoes(conn):
             base_sql += f" AND e.cidade ILIKE ANY (ARRAY[{cidade_placeholders}])"
             params.extend([f"%{c}%" for c in cidades])
 
-        base_sql += f"ORDER BY {criterio_ordenacao[0]} {criterio_ordenacao[1]}, e.cidade, s.nome_servico;"
+        base_sql += f" ORDER BY {criterio_ordenacao[0]} {criterio_ordenacao[1]}, e.cidade, s.nome_servico;"
         cursor.execute(base_sql, tuple(params))
         resultados = cursor.fetchall()
 
