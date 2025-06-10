@@ -23,6 +23,15 @@ def buscar_acomodacoes(conn):
                 break
             cidades.append(cidade)
 
+    criterios = [('d.valor_disp', 'ASC'), ('d.valor_disp', 'DESC'), ('d.data_inicio_disp', 'ASC'), ('d.data_inicio_disp', 'DESC')]
+    print("Deseja ordenar por:")
+    print("1 - Mais barato")
+    print("2 - Mais caro")
+    print("3 - Comeca mais cedo")
+    print("4 - Comeca mais tarde")
+    criterio_ordenacao = int(input("Escolha uma opção: "))
+    criterio_ordenacao = criterios[criterio_ordenacao-1]
+    
     try:
         base_sql = (
             "SELECT s.id_servico, s.nome_servico, a.tipo_acomodacao, d.valor_disp, e.cidade, e.estado "
@@ -30,7 +39,7 @@ def buscar_acomodacoes(conn):
             "JOIN acomodacao a ON s.id_servico = a.id_servico "
             "JOIN disponibilidade d ON s.id_servico = d.id_servico "
             "JOIN endereco e ON s.id_endereco = e.id_endereco "
-            "WHERE e.estado ILIKE %s"
+            "WHERE e.estado ILIKE %s "
         )
         params = [f"%{estado}%"]
 
@@ -40,7 +49,7 @@ def buscar_acomodacoes(conn):
             base_sql += f" AND e.cidade ILIKE ANY (ARRAY[{cidade_placeholders}])"
             params.extend([f"%{c}%" for c in cidades])
 
-        base_sql += " ORDER BY e.cidade, s.nome_servico;"
+        base_sql += f"ORDER BY {criterio_ordenacao[0]} {criterio_ordenacao[1]}, e.cidade, s.nome_servico;"
         cursor.execute(base_sql, tuple(params))
         resultados = cursor.fetchall()
 
