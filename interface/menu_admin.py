@@ -74,25 +74,29 @@ def menu_admin():
     - Listagem de dados gerais
     - Fechar conexão e sair
     """
-    conn = connect_db()
+    print("=== LOGIN NA AIRBNB-LANDIA COMO ADMIN ===")
+    user = input("Usuário do banco: ")
+    password = input("Senha do banco: ")
+
+    conn, cursor = connect_db(user, password)
     while True:
         print("\n=== MENU ADMINISTRADOR ===")
         print("1 - Criar índice")
-        print("3 - Analisar plano de execução (EXPLAIN ANALYZE)")
-        print("4 - Listar usuários")
-        print("5 - Listar serviços")
-        print("6 - Sair")
+        print("2 - Analisar plano de execução (EXPLAIN ANALYZE)")
+        print("3 - Listar usuários")
+        print("4 - Listar serviços")
+        print("5 - Sair")
         opcao = input("Escolha uma opção: ")
 
         if opcao == '1':
             criar_indice(conn)
-        elif opcao == '3':
+        elif opcao == '2':
             explain_query(conn)
-        elif opcao == '4':
+        elif opcao == '3':
             listar_usuarios(conn)
-        elif opcao == '5':
+        elif opcao == '4':
             listar_servicos(conn)
-        elif opcao == '6':
+        elif opcao == '5':
             print("Saindo do menu administrativo...")
             conn.close()
             break

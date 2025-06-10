@@ -120,7 +120,7 @@ def menu_anfitriao():
             ini = input("Data início (YYYY-MM-DD): ").strip()
             fim = input("Data fim    (YYYY-MM-DD): ").strip()
             val = float(input("Valor diária: ").strip())
-            create_disponibilidade(conn, None, serv, ini, fim, val)
+            create_disponibilidade(conn, serv, ini, fim, val)
 
         elif opcao == '5':
             try:
