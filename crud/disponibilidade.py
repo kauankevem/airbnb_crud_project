@@ -1,14 +1,16 @@
-def create_disponibilidade(cursor, conn, valores):
+def create_disponibilidade(conn, id_disponibilidade, id_servico, data_inicio_disp, data_fim_disp, valor_disp):
+    cursor = conn.cursor()
     try:
         sql = "INSERT INTO disponibilidade (id_disponibilidade, id_servico, data_inicio_disp, data_fim_disp, valor_disp) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(sql, valores)
+        cursor.execute(sql, (id_disponibilidade, id_servico, data_inicio_disp, data_fim_disp, valor_disp))
         conn.commit()
         print("Registro inserido com sucesso!")
     except Exception as e:
         print("Erro na inserção:", e)
         conn.rollback()
 
-def read_disponibilidade(cursor, colunas):
+def read_disponibilidade(conn, colunas):
+    cursor = conn.cursor()
     try:
         if isinstance(colunas, list):
             colunas_str = ", ".join(colunas)
@@ -23,7 +25,8 @@ def read_disponibilidade(cursor, colunas):
     except Exception as e:
         print("Erro na leitura:", e)
 
-def update_disponibilidade(cursor, conn, coluna, valor, filtro_coluna, filtro_valor):
+def update_disponibilidade(conn, coluna, valor, filtro_coluna, filtro_valor):
+    cursor = conn.cursor()
     try:
         sql = f"UPDATE disponibilidade SET {coluna} = %s WHERE {filtro_coluna} = %s;"
         cursor.execute(sql, (valor, filtro_valor))
@@ -33,7 +36,8 @@ def update_disponibilidade(cursor, conn, coluna, valor, filtro_coluna, filtro_va
         print("Erro na atualização:", e)
         conn.rollback()
 
-def delete_disponibilidade(cursor, conn, filtro_coluna, filtro_valor):
+def delete_disponibilidade(conn, filtro_coluna, filtro_valor):
+    cursor = conn.cursor()
     try:
         sql = f"DELETE FROM disponibilidade WHERE {filtro_coluna} = %s;"
         cursor.execute(sql, (filtro_valor,))

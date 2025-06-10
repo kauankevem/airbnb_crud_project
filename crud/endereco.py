@@ -1,14 +1,16 @@
-def create_endereco(cursor, conn, valores):
+def create_endereco(conn, id_endereco, cidade, pais, estado, endereco_postal, cep):
+    cursor = conn.cursor()
     try:
         sql = "INSERT INTO endereco (id_endereco, cidade, pais, estado, endereco_postal, cep) VALUES (%s, %s, %s, %s, %s, %s)"
-        cursor.execute(sql, valores)
+        cursor.execute(sql, (id_endereco, cidade, pais, estado, endereco_postal, cep))
         conn.commit()
         print("Registro inserido com sucesso!")
     except Exception as e:
         print("Erro na inserção:", e)
         conn.rollback()
 
-def read_endereco(cursor, colunas):
+def read_endereco(conn, colunas):
+    cursor = conn.cursor()
     try:
         if isinstance(colunas, list):
             colunas_str = ", ".join(colunas)
@@ -23,7 +25,8 @@ def read_endereco(cursor, colunas):
     except Exception as e:
         print("Erro na leitura:", e)
 
-def update_endereco(cursor, conn, coluna, valor, filtro_coluna, filtro_valor):
+def update_endereco(conn, coluna, valor, filtro_coluna, filtro_valor):
+    cursor = conn.cursor()
     try:
         sql = f"UPDATE endereco SET {coluna} = %s WHERE {filtro_coluna} = %s;"
         cursor.execute(sql, (valor, filtro_valor))
@@ -33,7 +36,8 @@ def update_endereco(cursor, conn, coluna, valor, filtro_coluna, filtro_valor):
         print("Erro na atualização:", e)
         conn.rollback()
 
-def delete_endereco(cursor, conn, filtro_coluna, filtro_valor):
+def delete_endereco(conn, filtro_coluna, filtro_valor):
+    cursor = conn.cursor()
     try:
         sql = f"DELETE FROM endereco WHERE {filtro_coluna} = %s;"
         cursor.execute(sql, (filtro_valor,))

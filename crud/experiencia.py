@@ -1,14 +1,16 @@
-def create_experiencia(cursor, conn, valores):
+def create_experiencia(conn, id_servico, duracao_exp):
+    cursor = conn.cursor()
     try:
         sql = "INSERT INTO experiencia (id_servico, duracao_exp) VALUES (%s, %s)"
-        cursor.execute(sql, valores)
+        cursor.execute(sql, (id_servico, duracao_exp))
         conn.commit()
         print("Registro inserido com sucesso!")
     except Exception as e:
         print("Erro na inserção:", e)
         conn.rollback()
 
-def read_experiencia(cursor, colunas):
+def read_experiencia(conn, colunas):
+    cursor = conn.cursor()
     try:
         if isinstance(colunas, list):
             colunas_str = ", ".join(colunas)
@@ -23,7 +25,8 @@ def read_experiencia(cursor, colunas):
     except Exception as e:
         print("Erro na leitura:", e)
 
-def update_experiencia(cursor, conn, coluna, valor, filtro_coluna, filtro_valor):
+def update_experiencia(conn, coluna, valor, filtro_coluna, filtro_valor):
+    cursor = conn.cursor()
     try:
         sql = f"UPDATE experiencia SET {coluna} = %s WHERE {filtro_coluna} = %s;"
         cursor.execute(sql, (valor, filtro_valor))
@@ -33,7 +36,8 @@ def update_experiencia(cursor, conn, coluna, valor, filtro_coluna, filtro_valor)
         print("Erro na atualização:", e)
         conn.rollback()
 
-def delete_experiencia(cursor, conn, filtro_coluna, filtro_valor):
+def delete_experiencia(conn, filtro_coluna, filtro_valor):
+    cursor = conn.cursor()
     try:
         sql = f"DELETE FROM experiencia WHERE {filtro_coluna} = %s;"
         cursor.execute(sql, (filtro_valor,))

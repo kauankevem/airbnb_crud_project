@@ -2,7 +2,8 @@
 from db.connection import connect_db
 
 
-def buscar_acomodacoes(conn, cursor):
+def buscar_acomodacoes(conn):
+    cursor = conn.cursor()
     estado = input("Digite o estado para buscar acomodações: ")
 
     print("Deseja filtrar por:")
@@ -44,43 +45,60 @@ def buscar_acomodacoes(conn, cursor):
         resultados = cursor.fetchall()
 
         if resultados:
-            print("Acomodações encontradas:")
+            print("\nAcomodações encontradas:")
             for r in resultados:
-                print(f"Serviço: {r[1]} | Tipo: {r[2]} | Valor: R${r[3]} | Cidade: {r[4]} | Estado: {r[5]}")
+                print(f"ID Serviço: {r[0]} | Nome: {r[1]} | Tipo: {r[2]} | Valor: R${r[3]} | Cidade: {r[4]} | Estado: {r[5]}")
         else:
             print("Nenhuma acomodação encontrada com os filtros informados.")
     except Exception as e:
         print("Erro ao buscar acomodações:", e)
 
 
+def verificar_disponibilidade(conn):
+    cursor = conn.cursor()
+    try:
+        servico_id = input("Informe o ID da acomodação que deseja verificar: ")
+        sql = (
+            "SELECT data_inicio_disp, data_fim_disp, valor_disp "
+            "FROM disponibilidade "
+            "WHERE id_servico = %s "
+            "ORDER BY data_inicio_disp;"
+        )
+        cursor.execute(sql, (servico_id,))
+        disponibilidade = cursor.fetchall()
+        if disponibilidade:
+            print(f"\nDisponibilidade para a acomodação {servico_id}:")
+            for data_inicio, data_fim, valor in disponibilidade:
+                print(f"De {data_inicio} até {data_fim} - R$ {valor:.2f}")
+        else:
+            print("Nenhuma disponibilidade cadastrada para essa acomodação.")
+    except Exception as e:
+        print("Erro ao consultar disponibilidade:", e)
 
-def reservar_acomodacao(conn, cursor):
+def reservar_acomodacao(conn):
+    cursor = conn.cursor()
+    from crud.reserva import create_reserva
+    from crud.hospede_faz_reserva import create_hospede_faz_reserva
     
     hospede_id = input("Seu ID de hóspede: ")
     servico_id = input("ID do serviço a reservar: ")
     entrada = input("Data de entrada (YYYY-MM-DD): ")
     saida = input("Data de saída (YYYY-MM-DD): ")
     pessoas = input("Número de pessoas: ")
+    
     try:
-        sql_reserva = (
-            "INSERT INTO reserva (id_reserva, data_entrada_res, data_saida_res, numero_pessoas, status_reserva, valor_reserva, id_servico) "
-            "VALUES (DEFAULT, %s, %s, %s, 'Pendente', 0, %s) RETURNING id_reserva;"
-        )
-        cursor.execute(sql_reserva, (entrada, saida, pessoas, servico_id))
-        id_reserva = cursor.fetchone()[0]
+        valores_reserva = (entrada, saida, pessoas, 'Pendente', 0, servico_id)
+        id_reserva = create_reserva(conn, valores_reserva)
 
-        sql_relacao = (
-            "INSERT INTO hospede_faz_reserva (id_usuario, id_reserva) VALUES (%s, %s);"
-        )
-        cursor.execute(sql_relacao, (hospede_id, id_reserva))
-        conn.commit()
+        create_hospede_faz_reserva(conn, (hospede_id, id_reserva))
         print(f"Reserva feita com ID {id_reserva}. Aguarde confirmação.")
     except Exception as e:
         print("Erro ao reservar:", e)
         conn.rollback()
 
 
-def ver_minhas_reservas(conn, cursor):
+def ver_minhas_reservas(conn):
+    cursor = conn.cursor()
     
     hospede_id = input("Seu ID de hóspede: ")
     try:
@@ -103,32 +121,28 @@ def ver_minhas_reservas(conn, cursor):
         print("Erro ao buscar reservas:", e)
 
 
-def avaliar_estadia(conn, cursor):
+def avaliar_estadia(conn):
+    cursor = conn.cursor()
+
+    from crud.avaliacao import create_avaliacao
+    from crud.classificacao_avaliacao import create_classificacao_avaliacao
+
     hospede_id = input("Seu ID de hóspede: ")
     id_reserva = input("ID da reserva que deseja avaliar: ")
     comentario = input("Comentário: ")
     data_aval = input("Data da avaliação (YYYY-MM-DD): ")
 
     try:
-        sql1 = (
-            "INSERT INTO avaliacao (id_avaliacao, id_reserva, id_usuario, comentario, data_avaliacao) "
-            "VALUES (DEFAULT, %s, %s, %s, %s) RETURNING id_avaliacao;"
-        )
-        cursor.execute(sql1, (id_reserva, hospede_id, comentario, data_aval))
-        id_avaliacao = cursor.fetchone()[0]
+        id_avaliacao = create_avaliacao(conn, (id_reserva, hospede_id, comentario, data_aval))
 
         while True:
             tipo = input("Tipo de classificação (ex: Limpeza, Localização): ")
             nota = input("Nota de 0 a 10: ")
-            sql2 = (
-                "INSERT INTO classificacao_avaliacao (id_avaliacao, tipo_class, nota) VALUES (%s, %s, %s);"
-            )
-            cursor.execute(sql2, (id_avaliacao, tipo, nota))
+            create_classificacao_avaliacao(conn, (id_avaliacao, tipo, nota))
+
             continuar = input("Deseja adicionar outra classificação? (s/n): ")
             if continuar.lower() != 's':
                 break
-
-        conn.commit()
         print("Avaliação registrada com sucesso.")
     except Exception as e:
         print("Erro ao avaliar estadia:", e)
@@ -145,21 +159,24 @@ def menu_hospede():
     while True:
         print("\n=== MENU HÓSPEDE ===")
         print("1 - Buscar acomodações")
-        print("2 - Reservar acomodação")
-        print("3 - Ver minhas reservas")
-        print("4 - Avaliar estadia")
-        print("5 - Sair")
+        print("2 - Verificar disponibilidade de uma acomodação")
+        print("3 - Reservar acomodação")
+        print("4 - Ver minhas reservas")
+        print("5 - Avaliar estadia")
+        print("6 - Sair")
         opcao = input("Escolha uma opção: ")
 
         if opcao == '1':
-            buscar_acomodacoes(conn, cursor)
+            buscar_acomodacoes(conn)
         elif opcao == '2':
-            reservar_acomodacao(conn, cursor)
+            verificar_disponibilidade(conn)
         elif opcao == '3':
-            ver_minhas_reservas(conn, cursor)
+            reservar_acomodacao(conn)
         elif opcao == '4':
-            avaliar_estadia(conn, cursor)
+            ver_minhas_reservas(conn)
         elif opcao == '5':
+            avaliar_estadia(conn)
+        elif opcao == '6':
             conn.close()
             break
         else:

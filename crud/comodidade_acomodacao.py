@@ -1,14 +1,16 @@
-def create_comodidade_acomodacao(cursor, conn, valores):
+def create_comodidade_acomodacao(conn, id_servico, comodidade):
+    cursor = conn.cursor()
     try:
         sql = "INSERT INTO comodidade_acomodacao (id_servico, comodidade) VALUES (%s, %s)"
-        cursor.execute(sql, valores)
+        cursor.execute(sql, (id_servico, comodidade))
         conn.commit()
         print("Registro inserido com sucesso!")
     except Exception as e:
         print("Erro na inserção:", e)
         conn.rollback()
 
-def read_comodidade_acomodacao(cursor, colunas):
+def read_comodidade_acomodacao(conn, colunas):
+    cursor = conn.cursor()
     try:
         if isinstance(colunas, list):
             colunas_str = ", ".join(colunas)
@@ -23,7 +25,8 @@ def read_comodidade_acomodacao(cursor, colunas):
     except Exception as e:
         print("Erro na leitura:", e)
 
-def update_comodidade_acomodacao(cursor, conn, coluna, valor, filtro_coluna, filtro_valor):
+def update_comodidade_acomodacao(conn, coluna, valor, filtro_coluna, filtro_valor):
+    cursor = conn.cursor()
     try:
         sql = f"UPDATE comodidade_acomodacao SET {coluna} = %s WHERE {filtro_coluna} = %s;"
         cursor.execute(sql, (valor, filtro_valor))
@@ -33,7 +36,8 @@ def update_comodidade_acomodacao(cursor, conn, coluna, valor, filtro_coluna, fil
         print("Erro na atualização:", e)
         conn.rollback()
 
-def delete_comodidade_acomodacao(cursor, conn, filtro_coluna, filtro_valor):
+def delete_comodidade_acomodacao(conn, filtro_coluna, filtro_valor):
+    cursor = conn.cursor()
     try:
         sql = f"DELETE FROM comodidade_acomodacao WHERE {filtro_coluna} = %s;"
         cursor.execute(sql, (filtro_valor,))
