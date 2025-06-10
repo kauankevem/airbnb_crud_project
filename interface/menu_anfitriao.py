@@ -89,8 +89,8 @@ def menu_anfitriao():
             try:
                 sql = (
                     "SELECT a.id_reserva, u.nome_usuario, a.comentario, a.data_avaliacao "
-                    "FROM anfitriao_oferta_servico aos, servico s, reserva r, avaliacao a, usuario u "
-                    f"WHERE aos.id_usuario = {anfitriao_id} AND aos.id_reserva = r.id_reserva AND a.id_reserva = r.id_reserva AND a.id_usuario = u.id_usuario;"
+                    "FROM anfitriao_oferta_servico aos, reserva r, avaliacao a, usuario u "
+                    f"WHERE aos.id_usuario = {anfitriao_id} AND aos.id_servico = r.id_servico AND a.id_reserva = r.id_reserva AND a.id_usuario = u.id_usuario;"
                 )
 
                 cursor.execute(sql)
