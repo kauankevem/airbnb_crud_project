@@ -8,7 +8,7 @@ def create_telefone_usuario(conn, id_usuario, telefone):
             (id_usuario, telefone)
         )
         conn.commit()
-        return Truedef create_telefone_usuario(conn, id_usuario, telefone):
+        return True def create_telefone_usuario(conn, id_usuario, telefone):
     """Adiciona um telefone para um usuário."""
     cursor = conn.cursor()
     try:
