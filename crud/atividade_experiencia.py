@@ -24,7 +24,7 @@ def read_atividades_por_servico(conn, id_servico):
     try:
         sql = "SELECT atividade_exp FROM atividade_experiencia WHERE id_servico = %s;"
         cursor.execute(sql, (id_servico,))
-        return [r[0] for r in cursor.fetchall()]
+        return cursor.fetchall()
     except Exception as e:
         print("Erro ao ler atividades_por_servico:", e)
         return []
