@@ -75,7 +75,7 @@ def menu_anfitriao():
             id_endereco = 0
             try:
                 sql = (
-                    "SELECT COUNT(id_endereco) "
+                    "SELECT MAX(id_endereco) "
                     "FROM endereco "
                     "GROUP BY id_endereco;"
                 )
@@ -90,7 +90,7 @@ def menu_anfitriao():
             
             try:
                 sql = (
-                    "SELECT COUNT(id_servico) "
+                    "SELECT MAX(id_servico) "
                     "FROM servico "
                     "GROUP BY id_servico;"
                 )
