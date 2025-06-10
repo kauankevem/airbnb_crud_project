@@ -14,6 +14,19 @@ def criar_indice(conn):
     except Exception as e:
         print("Erro ao criar índice:", e)
         conn.rollback()
+        
+        
+def remover_indice(conn):
+    cursor = conn.cursor()
+    nome_indice = input("Nome do índice: ")
+    sql = f"DROP INDEX {nome_indice};"
+    try:
+        cursor.execute(sql)
+        conn.commit()
+        print(f"Índice '{nome_indice}' removido com sucesso!")
+    except Exception as e:
+        print("Erro ao remover índice:", e)
+        conn.rollback()
 
 
 def explain_query(conn):
@@ -65,27 +78,26 @@ def menu_admin():
     while True:
         print("\n=== MENU ADMINISTRADOR ===")
         print("1 - Criar índice")
-        print("2 - Analisar plano de execução (EXPLAIN ANALYZE)")
-        print("3 - Listar usuários")
-        print("4 - Listar serviços")
-        print("5 - Sair")
+        print("3 - Analisar plano de execução (EXPLAIN ANALYZE)")
+        print("4 - Listar usuários")
+        print("5 - Listar serviços")
+        print("6 - Sair")
         opcao = input("Escolha uma opção: ")
 
         if opcao == '1':
             criar_indice(conn)
-        elif opcao == '2':
-            explain_query(conn)
         elif opcao == '3':
-            listar_usuarios(conn)
+            explain_query(conn)
         elif opcao == '4':
-            listar_servicos(conn)
+            listar_usuarios(conn)
         elif opcao == '5':
+            listar_servicos(conn)
+        elif opcao == '6':
             print("Saindo do menu administrativo...")
             conn.close()
             break
         else:
             print("Opção inválida. Tente novamente.")
-
 
 if __name__ == "__main__":
     menu_admin()

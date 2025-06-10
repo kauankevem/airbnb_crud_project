@@ -86,8 +86,24 @@ def menu_anfitriao():
             create_disponibilidade(conn, None, serv, ini, fim, val)
 
         elif opcao == '5':
-            aid = int(input("ID da avaliação: ").strip())
-            print(read_avaliacao(conn, aid))
+            try:
+                sql = (
+                    "SELECT a.id_reserva, u.nome_usuario, a.comentario, a.data_avaliacao "
+                    "FROM anfitriao_oferta_servico aos, servico s, reserva r, avaliacao a, usuario u "
+                    f"WHERE aos.id_usuario = {anfitriao_id} AND aos.id_reserva = r.id_reserva AND a.id_reserva = r.id_reserva AND a.id_usuario = u.id_usuario;"
+                )
+
+                cursor.execute(sql)
+                resultados = cursor.fetchall()
+
+                if resultados:
+                    print("\Avaliações encontradas:")
+                    for r in resultados:
+                        print(f"ID Reserva: {r[0]} | Nome: {r[1]} | Comentario: {r[2]} | Data da avaliação: R${r[3]}")
+                else:
+                    print("Nenhuma avaliação encontrada.")
+            except Exception as e:
+                print("Erro ao buscar avaliações:", e)
 
         elif opcao == '6':
             conn.close()
