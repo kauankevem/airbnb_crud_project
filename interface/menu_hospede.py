@@ -87,10 +87,10 @@ def reservar_acomodacao(conn):
     pessoas = input("Número de pessoas: ")
     
     try:
-        valores_reserva = (entrada, saida, pessoas, 'Pendente', 0, servico_id)
-        id_reserva = create_reserva(conn, valores_reserva)
+        # valores_reserva = (entrada, saida, pessoas, 'Pendente', 0, servico_id)
+        id_reserva = create_reserva(conn, entrada, saida, pessoas, 'Pendente', 0, servico_id)
 
-        create_hospede_faz_reserva(conn, (hospede_id, id_reserva))
+        create_hospede_faz_reserva(conn, hospede_id, id_reserva)
         print(f"Reserva feita com ID {id_reserva}. Aguarde confirmação.")
     except Exception as e:
         print("Erro ao reservar:", e)
@@ -128,17 +128,37 @@ def avaliar_estadia(conn):
     from crud.classificacao_avaliacao import create_classificacao_avaliacao
 
     hospede_id = input("Seu ID de hóspede: ")
+    
+    try:
+        sql = (
+                "SELECT R.id_reserva, R.data_entrada_res, R.data_saida_res "
+                "FROM hospede_faz_reserva HR, reserva R "
+                "WHERE %s = HR.id_usuario AND HR.id_reserva = R.id_reserva AND R.id_reserva NOT IN (SELECT id_reserva FROM avaliacao GROUP BY id_reserva);"
+            )
+        cursor.execute(sql, (hospede_id,))
+        reservas = cursor.fetchall()
+        if reservas:
+            print("Suas reservas nao avaliadas:")
+            for r in reservas:
+                print(r)
+        else:
+            print("Nenhuma reserva sem avaliacao encontrada.")
+            return
+    except Exception as e:
+        print("Erro ao buscar reservas nao avaliadas:", e)
+   
+
     id_reserva = input("ID da reserva que deseja avaliar: ")
     comentario = input("Comentário: ")
     data_aval = input("Data da avaliação (YYYY-MM-DD): ")
 
     try:
-        id_avaliacao = create_avaliacao(conn, (id_reserva, hospede_id, comentario, data_aval))
+        id_avaliacao = create_avaliacao(conn, id_reserva, hospede_id, comentario, data_aval)
 
         while True:
             tipo = input("Tipo de classificação (ex: Limpeza, Localização): ")
-            nota = input("Nota de 0 a 10: ")
-            create_classificacao_avaliacao(conn, (id_avaliacao, tipo, nota))
+            nota = input("Nota de 0 a 5: ")
+            create_classificacao_avaliacao(conn, id_avaliacao, tipo, nota)
 
             continuar = input("Deseja adicionar outra classificação? (s/n): ")
             if continuar.lower() != 's':
