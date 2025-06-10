@@ -1,4 +1,61 @@
 # CRUD para reserva
+from datetime import date
+
+def confirm_reserva(conn, id_reserva):
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id_servico, data_entrada_res, data_saida_res
+                  FROM reserva
+                 WHERE id_reserva = %s
+                   AND status_reserva = 'Pendente'
+                 FOR UPDATE
+            """, (id_reserva,))
+            row = cur.fetchone()
+            if not row:
+                return False
+            id_servico, dt_in, dt_out = row
+
+            cur.execute(
+                "UPDATE reserva "
+                "   SET status_reserva = 'Confirmada' "
+                " WHERE id_reserva = %s",
+                (id_reserva,)
+            )
+            _split_disponibilidade(cur, id_servico, dt_in, dt_out)
+            return True
+
+def _split_disponibilidade(cur, id_servico, entrada: date, saida: date):
+    cur.execute("""
+        SELECT id_disponibilidade, data_inicio_disp, data_fim_disp, valor_disp
+          FROM disponibilidade
+         WHERE id_servico = %s
+           AND data_inicio_disp <= %s
+           AND data_fim_disp   >= %s
+         FOR UPDATE
+    """, (id_servico, entrada, saida))
+    disp = cur.fetchone()
+    if not disp:
+        return
+    id_disp, dt_start, dt_end, valor = disp
+    cur.execute(
+        "DELETE FROM disponibilidade WHERE id_disponibilidade = %s",
+        (id_disp,)
+    )
+    if dt_start < entrada:
+        cur.execute("""
+            INSERT INTO disponibilidade
+                (id_servico, data_inicio_disp, data_fim_disp, valor_disp)
+            VALUES (%s, %s, %s, %s)
+        """, (id_servico, dt_start, entrada, valor))
+    if saida < dt_end:
+        cur.execute("""
+            INSERT INTO disponibilidade
+                (id_servico, data_inicio_disp, data_fim_disp, valor_disp)
+            VALUES (%s, %s, %s, %s)
+        """, (id_servico, saida, dt_end, valor))
+
+
 def create_reserva(conn, data_entrada, data_saida, numero_pessoas, status, valor, id_servico):
     """
     Insere uma nova reserva e retorna o id gerado.
