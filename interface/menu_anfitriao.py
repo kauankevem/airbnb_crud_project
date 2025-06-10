@@ -1,8 +1,8 @@
 from db.connection import connect_db
-from interface.acomodacao import create_acomodacao
-from interface.reserva import list_reservas, confirm_reserva
-from interface.disponibilidade import create_disponibilidade, update_disponibilidade, read_disponibilidade, delete_disponibilidade
-from interface.avaliacao import create_avaliacao, read_avaliacao, update_avaliacao, delete_avaliacao
+from crud.acomodacao import create_acomodacao
+from crud.reserva import list_reservas, confirm_reserva
+from crud.disponibilidade import create_disponibilidade, update_disponibilidade, read_disponibilidade, delete_disponibilidade
+from crud.avaliacao import create_avaliacao, read_avaliacao, update_avaliacao, delete_avaliacao
 
 def menu_confirmar_reservas(conn, id_anfitriao):
     with conn.cursor() as cur:
@@ -26,8 +26,30 @@ def menu_confirmar_reservas(conn, id_anfitriao):
         print("Confirmada." if ok else "Falha ao confirmar.")
 
 def menu_anfitriao():
-    conn = connect_db()
+    print("=== LOGIN NA AIRBNB-LANDIA COMO ANFITRIAO ===")
+    user = input("Usuário do banco: ")
+    password = input("Senha do banco: ")
     anfitriao_id = input("Seu ID de anfitrião: ").strip()
+
+    try:
+        conn, cursor = connect_db(user, password)
+
+        # Verifica se o ID informado está na tabela anfitriao
+        cursor.execute("SELECT 1 FROM anfitriao WHERE id_usuario = %s", (anfitriao_id,))
+        resultado = cursor.fetchone()
+
+        if resultado is None:
+            print("❌ ID de anfitrião inválido. Acesso negado.")
+            conn.close()
+            return
+        else:
+            print("✅ Login como anfitrião autorizado.")
+            # continuar fluxo do menu de anfitrião aqui
+
+    except Exception as e:
+        print("Erro ao conectar ou verificar usuário:", e)
+        return
+
     while True:
         print("\n=== MENU ANFITRIÃO ===")
         print("1 - Cadastrar acomodação")
