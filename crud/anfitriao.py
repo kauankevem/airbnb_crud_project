@@ -50,34 +50,3 @@ def delete_anfitriao(conn, id_usuario):
         except:
             conn.rollback()
             return False
-
-def menu_confirmar_reservas(conn, id_anfitriao):
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT r.id_reserva, s.nome_servico, r.data_entrada_res, r.data_saida_res
-              FROM reserva r
-              JOIN servico s ON r.id_servico = s.id_servico
-             WHERE r.status_reserva = 'Pendente'
-               AND s.id_anfitriao_resp = %s
-             ORDER BY r.data_entrada_res
-        """, (id_anfitriao,))
-        pendentes = cur.fetchall()
-    if not pendentes:
-        print("Nenhuma reserva pendente.")
-        return
-    for rid, nome, din, dout in pendentes:
-        print(f"[{rid}] {nome}: {din} → {dout}")
-    escolha = input("ID para confirmar (0 sai): ").strip()
-    if escolha.isdigit() and int(escolha) != 0:
-        ok = confirm_reserva(conn, int(escolha))
-        print("Confirmada." if ok else "Falha ao confirmar.")
-
-def menu_anfitriao(conn, id_anfitriao):
-    while True:
-        print("1) Confirmar reservas pendentes")
-        print("0) Sair")
-        op = input("Opção: ").strip()
-        if op == "1":
-            menu_confirmar_reservas(conn, id_anfitriao)
-        elif op == "0":
-            break
