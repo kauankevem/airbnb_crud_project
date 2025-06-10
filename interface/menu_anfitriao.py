@@ -75,31 +75,19 @@ def menu_anfitriao():
             id_endereco = 0
             try:
                 sql = (
-                    "SELECT COUNT(id_endereco) "
+                    "SELECT MAX(id_endereco) "
                     "FROM endereco "
                     "GROUP BY id_endereco;"
                 )
                 cursor.execute(sql)
                 id_endereco = cursor.fetchone()[0]
-                id_endereco += 1
             except Exception as e:
                 print("Erro ao buscar enderecos:", e)
                 
             nome_servico = input("Título do serviço: ")
-            create_servico(conn, nome_servico, anfitriao_id, id_endereco)
+            id_servico = create_servico(conn, nome_servico, anfitriao_id, id_endereco)
             
-            try:
-                sql = (
-                    "SELECT COUNT(id_servico) "
-                    "FROM servico "
-                    "GROUP BY id_servico;"
-                )
-                cursor.execute(sql)
-                id_servico = cursor.fetchone()[0]
-                id_servico += 1
-            except Exception as e:
-                print("Erro ao buscar servicos:", e)
-            
+            print(id_servico)       
             tipo = input("Tipo de acomodação: ").strip()
             quartos = int(input("Quartos: ").strip())
             banheiros = int(input("Banheiros: ").strip())
@@ -113,7 +101,7 @@ def menu_anfitriao():
         elif opcao == '3':
             for r in list_reservas(conn):
                 print(r)
-
+                
         elif opcao == '4':
             # coleta parâmetros e chama create_disponibilidade
             serv = int(input("ID do serviço: ").strip())

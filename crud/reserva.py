@@ -22,10 +22,10 @@ def confirm_reserva(conn, id_reserva):
                 " WHERE id_reserva = %s",
                 (id_reserva,)
             )
-            _split_disponibilidade(cur, id_servico, dt_in, dt_out)
+            split_disponibilidade(cur, id_servico, dt_in, dt_out)
             return True
 
-def _split_disponibilidade(cur, id_servico, entrada: date, saida: date):
+def split_disponibilidade(cur, id_servico, entrada: date, saida: date):
     cur.execute("""
         SELECT id_disponibilidade, data_inicio_disp, data_fim_disp, valor_disp
           FROM disponibilidade

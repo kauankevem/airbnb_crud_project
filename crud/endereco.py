@@ -1,7 +1,7 @@
 def create_endereco(conn, cidade, pais, estado, endereco_postal, cep):
     cursor = conn.cursor()
     try:
-        sql = "INSERT INTO endereco (cidade, pais, estado, endereco_postal, cep) VALUES (%s, %s, %s, %s, %s, %s)"
+        sql = "INSERT INTO endereco (cidade, pais, estado, endereco_postal, cep) VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(sql, (cidade, pais, estado, endereco_postal, cep))
         conn.commit()
         print("Registro inserido com sucesso!")

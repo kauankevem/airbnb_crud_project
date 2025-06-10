@@ -39,7 +39,9 @@ def explain_query(conn):
         for linha in planos:
             print(linha[0])
     except Exception as e:
+        conn.rollback()  # <- limpa a transação para evitar bloqueio
         print("Erro no EXPLAIN ANALYZE:", e)
+
 
 
 def listar_usuarios(conn):

@@ -1,8 +1,8 @@
-def create_disponibilidade(conn, id_disponibilidade, id_servico, data_inicio_disp, data_fim_disp, valor_disp):
+def create_disponibilidade(conn, id_servico, data_inicio_disp, data_fim_disp, valor_disp):
     cursor = conn.cursor()
     try:
-        sql = "INSERT INTO disponibilidade (id_disponibilidade, id_servico, data_inicio_disp, data_fim_disp, valor_disp) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(sql, (id_disponibilidade, id_servico, data_inicio_disp, data_fim_disp, valor_disp))
+        sql = "INSERT INTO disponibilidade (id_servico, data_inicio_disp, data_fim_disp, valor_disp) VALUES (%s, %s, %s, %s)"
+        cursor.execute(sql, (id_servico, data_inicio_disp, data_fim_disp, valor_disp))
         conn.commit()
         print("Registro inserido com sucesso!")
     except Exception as e:
